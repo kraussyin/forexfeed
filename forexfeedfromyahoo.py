@@ -7,6 +7,8 @@ import datetime
 import json
 import time
 import pandas as pd
+from forex_db import ForexDb
+import ConfigParser
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -27,8 +29,6 @@ def main():
     outputfullpath = "" + startday + "_rate.csv"
 
     while True:
-        if cnt >= 5:
-            break
         if startday != endday:
             break
 
@@ -75,6 +75,35 @@ def main():
     df.to_csv(outputfullpath,index=None)
 
     print df
+
+    """DBへのInsert"""
+    print "Insert into Data Base"
+    conf = ConfigParser.SafeConfigParser()
+    conf.read("forex.ini")
+
+    db = ForexDb(host=conf.get("DB",
+                                  "host"),
+                    user=conf.get("DB",
+                                  "user"),
+                    pas=conf.get("DB",
+                                 "pass"),
+                    database=conf.get("DB",
+                                      "database"))
+
+    """テーブルの作成"""
+    db.create_db(startday[0:6])
+    db.Commit()
+
+    """レコードの削除"""
+    db.DeleteForex(startday)
+    db.Commit()
+
+    """Insert"""
+    [db.InsertForex(row["updatetime"],row["ccy_pair"],row["Bid"],row["Mid"],row["Ask"],row["Datetime"],startday[0:6]) for index,row in df.iterrows()]
+    db.Commit()
+
+    """DB接続のクローズ"""
+    db.close()
 
 
 if __name__ == '__main__':
