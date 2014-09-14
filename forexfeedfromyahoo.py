@@ -21,7 +21,7 @@ def main():
     _retlist = []
     append = _retlist.append
     cnt = 0
-    is_test = 1
+    is_test = 0
 
     startday = datetime.datetime.strftime(datetime.datetime.now(),"%Y%m%d")
     endday = datetime.datetime.strftime(datetime.datetime.now(),"%Y%m%d")
