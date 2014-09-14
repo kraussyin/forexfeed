@@ -27,7 +27,7 @@ def main():
     endday = datetime.datetime.strftime(datetime.datetime.now(),"%Y%m%d")
 
     print startday
-    outputfullpath = "../output/" + startday + "_rate.csv"
+    outputfullpath = "" + startday + "_rate.csv"
 
     while True:
         if startday != endday:
