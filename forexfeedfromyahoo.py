@@ -123,8 +123,10 @@ def main():
     db.Commit()
 
     """Insert"""
-    print "Insert into Table"
-    [db.InsertForex(row["updatetime"],row["ccy_pair"],row["Bid"],row["Mid"],row["Ask"],row["Datetime"],startday[0:6]) for index,row in df.iterrows()]
+    print "Convert to List of Dict"
+    list_of_dict = [row.to_dict() for index,row in df.iterrows()]
+    print "Insert to DB"
+    db.InsertForexMulti(list_of_dict,startday[0:6])
     db.Commit()
 
     """DB接続のクローズ"""
