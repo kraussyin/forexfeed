@@ -29,10 +29,28 @@ def main():
     print startday
     outputfullpath = "" + startday + "_rate.csv"
 
+    youbi = datetime.datetime.now().isoweekday()
+    starthour = 0
+    endhour = 30
+    if youbi == 1:
+        """月曜の場合は開始時間を遅らす"""
+        starthour = 5
+    if youbi == 6:
+        """土曜の場合は修了時間を早める"""
+        endhour = 7
+
+    """開始待ち"""
+    while True:
+        """開始時刻よりも後になったらbreak"""
+        if datetime.datetime.now().hour >= starthour:
+            break
+
     while True:
         if startday != endday:
             break
         if cnt > 5 and is_test == 1:
+            break
+        if datetime.datetime.now().hour >= endhour:
             break
 
         try:
