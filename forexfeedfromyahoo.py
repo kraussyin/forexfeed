@@ -21,6 +21,7 @@ def main():
     _retlist = []
     append = _retlist.append
     cnt = 0
+    is_test = 1
 
     startday = datetime.datetime.strftime(datetime.datetime.now(),"%Y%m%d")
     endday = datetime.datetime.strftime(datetime.datetime.now(),"%Y%m%d")
@@ -30,6 +31,8 @@ def main():
 
     while True:
         if startday != endday:
+            break
+        if cnt > 5 and is_test == 1:
             break
 
         try:
@@ -68,7 +71,8 @@ def main():
     df = pd.DataFrame(_retlist)
     df.rename(columns={"id":"ccy_pair","Rate":"Mid"},inplace=True)
     df["Datetime"] = df["Date"] + " " + df["Time"]
-    df["Datetime"] = map(lambda x:datetime.datetime.strptime(x,"%m/%d/%Y %I:%M%p"),df["Datetime"])
+    df["Datetime"] = map(lambda x:datetime.datetime.strptime(x,"%m/%d/%Y %I:%M%p").strftime("%Y-%m-%d %H:%M:%S"),df["Datetime"])
+    df["updatetime"] = map(lambda x:x.strftime("%Y-%m-%d %H:%M:%S"),df["updatetime"])
     df = df[["updatetime","ccy_pair","Bid","Mid","Ask","Datetime"]]
 
     """csvに吐き出す"""
@@ -91,14 +95,17 @@ def main():
                                       "database"))
 
     """テーブルの作成"""
+    print "Create Database"
     db.create_db(startday[0:6])
     db.Commit()
-
+    
     """レコードの削除"""
+    print "Deleate Record"
     db.DeleteForex(startday)
     db.Commit()
 
     """Insert"""
+    print "Insert into Table"
     [db.InsertForex(row["updatetime"],row["ccy_pair"],row["Bid"],row["Mid"],row["Ask"],row["Datetime"],startday[0:6]) for index,row in df.iterrows()]
     db.Commit()
 
