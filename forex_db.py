@@ -60,6 +60,21 @@ class ForexDb:
         except mysql.IntegrityError:
             print "Error Occurred in insert " % (updatetime)
 
+    def InsertForexMulti(self,list_of_dict,yyyymm=""):
+        try:
+            sql = "REPLACE INTO forex_price_" + str(yyyymm) + "(updatetime, ccy_pair, Bid, Mid,Ask,Datetime) VALUES"
+            ss = ""
+            params_list = []
+            for row in list_of_dict:
+                ss += "( %s, %s, %s, %s, %s, %s),"
+                tmp = [row["updatetime"],row["ccy_pair"],row["Bid"],row["Mid"],row["Ask"],row["Datetime"]]
+                [params_list.append(x) for x in tmp]
+            sql += ss[0:-1]
+            self._cur.execute(sql,params_list)
+
+        except mysql.IntegrityError:
+            print "Error Occurred in insert "
+
     def DeleteForex(self,yyyymmdd=""):
         try:
             yyyymm = str(yyyymmdd)[0:6]
